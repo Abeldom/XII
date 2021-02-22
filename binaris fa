@@ -1,84 +1,91 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 
 ifstream in("input.txt");
 
-struct csomo{
-    int ertek;
-    csomo* elod;
-    csomo* bal;
-    csomo* jobb;
+struct csomo {
+  int ertek;
+  csomo* elod;
+  csomo* bal;
+  csomo* jobb;
 };
 
-
-void letrehoz(elek* index,int ertek){
-    node[ertek].elod=index;
-    node[ertek].bal==NULL;
-    node[ertek].jobb=NULL;
-
-    /*node* csomo=new node;
-    csomo->index=index;
-    csomo->bal=NULL;
-    csomo->jobb=NULL;
-    return csomo;
-    */
+void letrehoz(csomo node[], csomo* os, int sorszam) {
+  node[sorszam].elod = os;
+  node[sorszam].ertek = sorszam;
+  node[sorszam].bal = NULL;
+  node[sorszam].jobb = NULL;
 };
 
-
-int bejaras(csomo* node,1){
-    if(node[valaki].bal!=0){
-
+void utodok(csomo node[], int szam) {
+  if (node[szam].bal != NULL) {
+    cout << node[szam].bal->ertek << " ";
+    if (node[szam].jobb != NULL) {
+      cout << node[szam].jobb->ertek << " ";
     }
-
-
-
+    utodok(node, node[szam].bal->ertek);
+  }
+  if (node[szam].jobb != NULL) {
+    if (node[szam].bal == NULL) {
+      cout << node[szam].jobb->ertek << " ";
+    }
+    utodok(node, node[szam].jobb->ertek);
+  }
 }
 
+void elodok(csomo node[], int szam) {
+  if (node[szam].elod == NULL) {
+    return;
+  }
+  cout << node[szam].elod->ertek << " ";
+  elodok(node, node[szam].elod->ertek);
+}
 
 /// 1.feladat
-int main()
-{
-    int n;
-    in>>n;
+int main() {
+  int n;
+  in >> n;
 
-    csomo node[n+1];
-    node[1].elod=NULL;
+  csomo node[n + 1];
+  node[1].elod = NULL;
+  node[1].ertek = 1;
 
-    for(int i=1;i<=n;i++){
-        int jobbszomszed,balszomszed;
-        in>>balszomszed>>jobbszomszed;
-        if(balszomszed!=0){
-            letrehoz(*node[i],balszomszed);
-            node[i].bal=*node[balszomszed];
-        }
-        if(jobbszomszed!=0){
-            letrehoz(*node[i],jobbszomszed);
-            node[i].bal=*node[jobbszomszed];
-        }
+  int szaml = 1;
+
+  for (int i = 1; i <= n; i++) {
+    int jobbszomszed, balszomszed;
+    in >> balszomszed >> jobbszomszed;
+    if (balszomszed != 0) {
+      szaml++;
+      letrehoz(node, &node[i], szaml);
+      node[i].bal = &node[szaml];
     }
-
-    bejaras(*node[1],1);
-
-  /*
-    int J[n],B[n];
-    for(int i=0;i<n;i++){
-        in>>J[i];
+    if (jobbszomszed != 0) {
+      szaml++;
+      letrehoz(node, &node[i], szaml);
+      node[i].jobb = &node[szaml];
     }
-    for(int i=0;i<n;i++){
-        in>>B[i];
-    }
-    int gyerek;
-    cin>>gyerek;
+  }
+  cout << szaml << " tag van." << endl;
 
-    for(int i=0;i<n;i++){
-        if(J[i]==gyerek || B[i]==gyerek){
-            cout<<i+1;
-            return 0;
-        }
-    }
-    cout<<"nincs neki szulo";
-*/
-        return 0;
+  int x = 7;
+
+  cout << x << " utodai: ";
+  if (node[x].bal == node[x].jobb) {
+    cout << "nincs." << endl;
+  } else {
+    utodok(node, x);
+    cout << endl;
+  }
+
+  cout << x << " elodei: ";
+  if (node[x].elod != NULL) {
+    elodok(node, x);
+  } else {
+    cout << " nincs." << endl;
+  }
+
+  return 0;
 }
