@@ -1,0 +1,91 @@
+#include <fstream>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+ifstream in("input.txt");
+ofstream out("output.txt");
+
+unsigned long long int k=0;
+unsigned long long int szaml = 0;
+bool talalt = false;
+
+void particio(int n, vector<int> aktualis, unsigned long long int memo[]) {
+  if (n == 0) {
+    szaml++;
+    if (k == szaml) {
+      for (unsigned int i = 0; i < aktualis.size(); i++) {
+        out << aktualis[i] << " ";
+      }
+      talalt = true;
+    }
+    return;
+  }
+  for (int i = 1; i <= n; i++) {
+    if (szaml + memo[n - i] >= k) {
+      aktualis.push_back(i);
+      particio(n - i, aktualis, memo);
+      aktualis.pop_back();
+    } else {
+      szaml += memo[n - i];
+    }
+    if (talalt) {
+      return;
+    }
+  }
+  return;
+}
+
+void particio2(int n, vector<int> bemenet, unsigned long long int memo[]) {
+  int osszeg = 0;
+  for (int i = 0; i < bemenet.size(); i++) {
+    for (int j = 1; j < bemenet[i]; j++) {
+      k += memo[n - osszeg - j];
+    }
+    osszeg += bemenet[i];
+  }
+  out << k+1;
+}
+
+int main() {
+  int c, n;
+  in >> c >> n;
+
+  unsigned long long int a = 1;
+  for (int i = 0; i < 17; i++) {
+    a = a * 10;
+  }
+  int szaml = 0;
+
+  unsigned long long int memo[n];
+  memo[0] = 1;
+  memo[1] = 1;
+  int hany = 0;
+  for (int i = 2; i < n; i++) {
+    memo[i] = memo[i - 1] * 2;
+    if (memo[i] > a) {
+      szaml = i;
+      break;
+    }
+  }
+
+  if (c == 1) {
+    in >> k;
+
+    for (int i = szaml + 1; i < n; i++) {
+      memo[i] = k;
+    }
+    vector<int> megoldas;
+    particio(n, megoldas, memo);
+  } else {
+    int x;
+    vector<int> bemenet;
+    while (in >> x) {
+      bemenet.push_back(x);
+    }
+    particio2(n, bemenet, memo);
+  }
+
+  return 0;
+}
